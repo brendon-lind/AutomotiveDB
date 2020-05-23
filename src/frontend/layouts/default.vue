@@ -1,7 +1,6 @@
 <template>
     <v-app>
         <div v-if="this.$auth.loggedIn">
-            you are logged in!
         </div>
 
         <nuxt class="content"/>
