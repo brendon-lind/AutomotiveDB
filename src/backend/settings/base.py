@@ -38,6 +38,7 @@ THIRD_PARTY_APPS = (
 OUR_APPS = (
     'users',
     'commands',
+    'api',
 )
 INSTALLED_APPS = THIRD_PARTY_APPS + OUR_APPS
 
