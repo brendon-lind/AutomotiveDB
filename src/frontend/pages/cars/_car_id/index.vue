@@ -9,6 +9,7 @@
                 >
                     <v-card
                         class="car-header"
+                        dark
                         fluid
                     >
                         <v-container>
@@ -36,10 +37,14 @@
                                 <v-col
                                     cols="3"
                                 >
-                                    <v-btn>
+                                    <v-btn
+                                        class="mb-4 grey darken-2"
+                                    >
                                         General Files
                                     </v-btn>
-                                    <v-btn>
+                                    <v-btn
+                                        class="grey darken-2"
+                                    >
                                         Invoice Files
                                     </v-btn>
                                 </v-col>
@@ -58,6 +63,7 @@
                     <v-card
                         class="car-comments"
                         fluid
+                        dark
                         justify="end"
                     >
                         <v-container>
@@ -181,5 +187,4 @@
     .comment {
         margin: 45px;
     }
-
 </style>
