@@ -4,9 +4,9 @@ from django.contrib.postgres.fields import ArrayField
 
 class Customer(models.Model):
     name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=20)
-    description = models.TextField()
-    portrait = models.ImageField(default='user_silhouette.png')
+    phone_number = models.CharField(max_length=20, blank=True)
+    description = models.TextField(blank=True)
+    portrait = models.ImageField(default='user_silhouette.png', null=True)
 
     def __str__(self):
         return self.name
@@ -14,10 +14,10 @@ class Customer(models.Model):
 
 class Car(models.Model):
     customer = models.ForeignKey(Customer, related_name='cars', on_delete=models.CASCADE)
-    year = models.IntegerField()
-    make = models.CharField(max_length=50)
-    model = models.CharField(max_length=50)
-    vin = models.CharField(max_length=50)
+    year = models.IntegerField(blank=True)
+    make = models.CharField(max_length=50, blank=True)
+    model = models.CharField(max_length=50, blank=True)
+    vin = models.CharField(max_length=50, blank=True)
     header_photo = models.ImageField(null=True)
     files = ArrayField(
         models.FileField(),
