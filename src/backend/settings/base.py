@@ -34,6 +34,7 @@ THIRD_PARTY_APPS = (
     'corsheaders',
     'whitenoise',
     'dj_rest_auth',
+    'django_filters',
 )
 OUR_APPS = (
     'users',
@@ -135,7 +136,10 @@ REST_FRAMEWORK = {
     'DATETIME_INPUT_FORMATS': (
         'iso-8601',
         '%B %d, %Y',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
 }
 
 
