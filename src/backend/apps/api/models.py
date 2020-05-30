@@ -13,11 +13,28 @@ class Customer(models.Model):
 
 
 class Car(models.Model):
+    ENGINE_LAYOUT_CHOICES = (
+        ('Inline 4', 'Inline 4'),
+        ('Inline 5', 'Inline 5'),
+        ('Inline 6', 'Inline 6'),
+        ('Flat 4', 'Flat 4'),
+        ('Flat 6', 'Flat 6'),
+        ('V6', 'V6'),
+        ('V8', 'V8'),
+    )
+    FUEL_CHOICES = (
+        ('Gasoline', 'Gasoline'),
+        ('Diesel', 'Diesel'),
+        ('Flex-Fuel', 'Flex-Fuel'),
+    )
     customer = models.ForeignKey(Customer, related_name='cars', on_delete=models.CASCADE)
     year = models.IntegerField(blank=True)
     make = models.CharField(max_length=50, blank=True)
     model = models.CharField(max_length=50, blank=True)
     vin = models.CharField(max_length=50, blank=True)
+    engine_size = models.CharField(max_length=50, blank=True)
+    engine_layout = models.CharField(choices=ENGINE_LAYOUT_CHOICES, max_length=50, blank=True)
+    fuel = models.CharField(choices=FUEL_CHOICES, max_length=50, blank=True)
     header_photo = models.ImageField(null=True)
     files = ArrayField(
         models.FileField(),

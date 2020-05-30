@@ -37,7 +37,7 @@
                                             <v-text-field v-model="customer_form.description" label="Description"></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
-                                            <v-file-input v-model="customer_form.portrait" label="Profile Picture"></v-file-input>
+                                            <v-file-input multiple v-model="customer_form.portrait" label="Profile Picture"></v-file-input>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -49,7 +49,39 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-btn color="primary">Add Vehicle</v-btn>
+                    <v-dialog dark v-model="dialog" max-width="600px">
+                        <template v-slot:activator="{ on }">
+                            <v-btn color="primary" v-on="on">Add Vehicle</v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title>
+                                <span class="headline">Customer</span>
+                            </v-card-title>
+                            <v-card-text>
+                                <v-container>
+                                    <v-row>
+                                        <v-col cols="12">
+                                            <v-text-field v-model="customer_form.name" label="Customer Name" required></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12">
+                                                <v-text-field v-model="customer_form.phone_number" label="Phone Number" required></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-text-field v-model="customer_form.description" label="Description"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-file-input multiple v-model="customer_form.portrait" label="Profile Picture"></v-file-input>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" text @click="dialog = false">Close</v-btn>
+                                <v-btn color="primary" text @click="add_new_customer">Save</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
                 </v-col>
             </v-row>
             <v-row justify="center">
@@ -108,7 +140,7 @@
              let url = `/api/cars/`
              let resp = await this.$axios.get(url)
              this.cars = resp.data
-         }
+         },
      },
      mounted () {
          this.get_car()
