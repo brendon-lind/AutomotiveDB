@@ -74,7 +74,7 @@
                                 >
                                     <v-btn
                                         v-if="!new_comment"
-                                        @click="new_comment = true"
+                                        @click="add_comment"
                                         color="primary"
                                     >
                                         <v-icon>mdi-plus</v-icon>
@@ -96,6 +96,13 @@
                                     >
                                         <v-icon>mdi-plus</v-icon>
                                         Save New Comment
+                                    </v-btn>
+                                    <v-btn
+                                        v-if="new_comment"
+                                        color="primary"
+                                        @click="new_comment=false"
+                                    >
+                                        Cancel
                                     </v-btn>
                                     <v-list>
                                         <v-list-item
@@ -172,6 +179,12 @@
             },
             format_date(datestring) {
                 return this.$moment(datestring).format("dddd, MMMM Do YYYY, h:mm:ss a")
+            },
+            add_comment() {
+                this.new_comment_data = ''
+                this.new_comment = true
+                console.log('cleared new_comment_data')
+                console.log(self.new_comment_data)
             }
         },
         async mounted() {
