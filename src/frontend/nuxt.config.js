@@ -92,7 +92,7 @@ export default {
         theme: {
             themes: {
                 light: {
-                    primary: '#5b8c5a'
+                    primary: '#329696'
                 }
             }
         }
