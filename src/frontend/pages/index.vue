@@ -28,16 +28,16 @@
                                 <v-container>
                                     <v-row>
                                         <v-col cols="12">
-                                            <v-text-field label="Customer Name" required></v-text-field>
+                                            <v-text-field v-model="customer_form.name" label="Customer Name" required></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
-                                                <v-text-field label="Phone Number" required></v-text-field>
+                                                <v-text-field v-model="customer_form.phone_number" label="Phone Number" required></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
-                                            <v-text-field label="Description"></v-text-field>
+                                            <v-text-field v-model="customer_form.description" label="Description"></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
-                                            <v-file-input label="Profile Picture"></v-file-input>
+                                            <v-file-input v-model="customer_form.portrait" label="Profile Picture"></v-file-input>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -45,7 +45,7 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="primary" text @click="dialog = false">Close</v-btn>
-                                <v-btn color="primary" text @click="dialog = false">Save</v-btn>
+                                <v-btn color="primary" text @click="add_new_customer">Save</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
@@ -73,6 +73,15 @@
  export default {
      data () {
          return {
+             customer_headers: {
+                 'Content-Type': 'multipart/form-data',
+             },
+             customer_form: {
+                 name: null,
+                 phone_number: null,
+                 description: null,
+                 portrait: null,
+             },
              dialog: false,
              cars: [],
              search: '',
@@ -86,6 +95,12 @@
          }
      },
      methods: {
+         add_new_customer (){
+             console.log(this.customer_form)
+             let url= '/api/customers/'
+             this.$axios.post(url, this.customer_form, this.customer_headers)
+             this.dialog= false
+         },
          go_to_car_detail_page (car) {
              window.location.href = `/cars/${car.id}`
          },
