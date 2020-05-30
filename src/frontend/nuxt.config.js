@@ -1,5 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
 
+import webpack from 'webpack'
+
 export default {
     mode: 'universal',
     /*
@@ -109,6 +111,11 @@ export default {
         /*
         ** You can extend webpack config here
         */
+        plugins: [
+            new webpack.ProvidePlugin({
+                '_': 'lodash'
+            })
+        ],
         extend(config, ctx) {
         }
     },
