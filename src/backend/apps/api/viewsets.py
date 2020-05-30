@@ -2,6 +2,7 @@ from rest_framework import viewsets
 
 from .serializers import CustomerSerializer, CarSerializer, CommentSerializer
 from .models import Customer, Car, Comment
+from .filtersets import CommentFilterSet
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -17,3 +18,4 @@ class CarViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    filter_class = CommentFilterSet
