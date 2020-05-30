@@ -19,7 +19,7 @@
                 <v-data-table
                     @click:row="go_to_car_detail_page"
                     :headers="headers"
-                    :items="car"
+                    :items="cars"
                     :items-per-page="12"
                     class="elevation-1"
                     :search="search"
@@ -34,11 +34,11 @@
  export default {
      data () {
          return {
-             car: [],
+             cars: [],
              search: '',
              headers: [
                  { text: "Car", value:"model"},
-                 { text: "Customer Name", value:"customer_name"}, 
+                 { text: "Customer Name", value:"customer_name"},
                  { text: "Phone Number", value:"customer_phone_number"},
              ]
 
@@ -46,12 +46,12 @@
      },
      methods: {
          go_to_car_detail_page (car) {
-             window.location.href = `/${car.id}`
+             window.location.href = `/cars/${car.id}`
          },
          async get_car () {
              let url = `/api/cars/`
              let resp = await this.$axios.get(url)
-             this.car = resp.data
+             this.cars = resp.data
          }
      },
      mounted () {
