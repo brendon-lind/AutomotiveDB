@@ -28,6 +28,10 @@ class CarSerializer(serializers.ModelSerializer):
             'year',
             'model',
             'vin',
+            'header_photo',
+            'files',
+            'make',
+            'invoices',
         )
 
     def get_customer_name(self, obj):
