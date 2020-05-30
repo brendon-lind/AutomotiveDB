@@ -17,9 +17,9 @@
             <v-row justify="center">
                 <v-col cols="9">
                 <v-data-table
-                    @click:row="go_to_customer_detail_page"
+                    @click:row="go_to_car_detail_page"
                     :headers="headers"
-                    :items="customers"
+                    :items="car"
                     :items-per-page="12"
                     class="elevation-1"
                     :search="search"
@@ -34,31 +34,28 @@
  export default {
      data () {
          return {
-             customers: [],
+             car: [],
              search: '',
              headers: [
-                 { text: "Customer Name", value:"name",
-                     align: 'start',
-                     sortable: false,
-                     value: 'name',
-                 },
-                 { text: "Phone Number", value:"phone_number"},
+                 { text: "Car", value:"model"},
+                 { text: "Customer Name", value:"customer_name"}, 
+                 { text: "Phone Number", value:"customer_phone_number"},
              ]
 
          }
      },
      methods: {
-         go_to_customer_detail_page (customer) {
-             window.location.href = `/${customer.id}`
+         go_to_car_detail_page (car) {
+             window.location.href = `/${car.id}`
          },
-         async get_customers () {
-             let url = `/api/customers/`
+         async get_car () {
+             let url = `/api/cars/`
              let resp = await this.$axios.get(url)
-             this.customers = resp.data
+             this.car = resp.data
          }
      },
      mounted () {
-         this.get_customers()
+         this.get_car()
      }
  }
 </script>
