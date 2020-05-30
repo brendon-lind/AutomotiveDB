@@ -53,7 +53,7 @@ export default {
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         '@nuxtjs/auth',
-        // '@nuxtjs/moment',
+        '@nuxtjs/moment',
     ],
     /*
     ** Axios module configuration
@@ -92,7 +92,7 @@ export default {
         theme: {
             themes: {
                 light: {
-                    primary: '#5b8c5a'
+                    primary: '#329696'
                 }
             }
         }
