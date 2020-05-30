@@ -11,7 +11,9 @@ class CustomerSerializer(serializers.ModelSerializer):
             'name',
             'phone_number',
             'description',
+            'portrait',
         )
+
 
 class CarSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,6 +25,7 @@ class CarSerializer(serializers.ModelSerializer):
             'model',
             'vin',
         )
+
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:

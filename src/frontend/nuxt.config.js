@@ -62,6 +62,7 @@ export default {
     axios: {
         baseURL: 'http://django:8000',
         browserBaseURL: process.env.NODE_ENV === 'production' ? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com` : 'http://localhost:8000'
+        // browserBaseURL: 'http://localhost',
     },
     auth: {
         fetchUserOnLogin: true,

@@ -17,6 +17,7 @@
             <v-row justify="center">
                 <v-col cols="9">
                 <v-data-table
+                    @click:row="go_to_customer_detail_page"
                     :headers="headers"
                     :items="customers"
                     :items-per-page="12"
@@ -33,26 +34,7 @@
  export default {
      data () {
          return {
-             customers: [
-                 { name: 'John', phone_number: '(123)456-7890'},
-                 { name: 'Sue', phone_number: '(123)456-7890'},
-                 { name: 'Mary', phone_number: '(123)456-7890'},
-                 { name: 'Jesus', phone_number: '(123)456-7890'},
-                 { name: 'Allah', phone_number: '(123)456-7890'},
-                 { name: 'Marduk', phone_number: '(123)456-7890'},
-                 { name: 'John', phone_number: '(123)456-7890'},
-                 { name: 'Sue', phone_number: '(123)456-7890'},
-                 { name: 'Mary', phone_number: '(123)456-7890'},
-                 { name: 'Jesus', phone_number: '(123)456-7890'},
-                 { name: 'Allah', phone_number: '(123)456-7890'},
-                 { name: 'Marduk', phone_number: '(123)456-7890'},
-                 { name: 'John', phone_number: '(123)456-7890'},
-                 { name: 'Sue', phone_number: '(123)456-7890'},
-                 { name: 'Mary', phone_number: '(123)456-7890'},
-                 { name: 'Jesus', phone_number: '(123)456-7890'},
-                 { name: 'Allah', phone_number: '(123)456-7890'},
-                 { name: 'Marduk', phone_number: '(123)456-7890'},
-             ],
+             customers: [],
              search: '',
              headers: [
                  { text: "Customer Name", value:"name",
@@ -64,6 +46,19 @@
              ]
 
          }
+     },
+     methods: {
+         go_to_customer_detail_page (customer) {
+             window.location.href = `/${customer.id}`
+         },
+         async get_customers () {
+             let url = `/api/customers/`
+             let resp = await this.$axios.get(url)
+             this.customers = resp.data
+         }
+     },
+     mounted () {
+         this.get_customers()
      }
  }
 </script>
