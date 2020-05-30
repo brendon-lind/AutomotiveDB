@@ -5,7 +5,7 @@
                 justify="center"
             >
                 <v-col
-                    cols="9"
+                    cols="11"
                 >
                     <v-card
                         class="car-header"
@@ -36,6 +36,7 @@
                                 </v-col>
                                 <v-col
                                     cols="3"
+                                    align="end"
                                 >
                                     <v-btn
                                         class="mb-4 grey darken-2"
@@ -58,7 +59,7 @@
                 justify="center"
             >
                 <v-col
-                    cols="9"
+                    cols="11"
                 >
                     <v-card
                         class="car-comments"
@@ -74,6 +75,7 @@
                                     <v-btn
                                         v-if="!new_comment"
                                         @click="new_comment = true"
+                                        color="primary"
                                     >
                                         <v-icon>mdi-plus</v-icon>
                                         Add Comment
@@ -89,7 +91,7 @@
                                     />
                                     <v-btn
                                         v-if="new_comment"
-                                        class="green white--text"
+                                        color="primary"
                                         @click="save_comment"
                                     >
                                         <v-icon>mdi-plus</v-icon>
@@ -101,7 +103,7 @@
                                             class="comment"
                                         >
                                             <v-list-item-content
-                                                class="display-1"
+                                                class="headline"
                                             >
                                                 <v-list-item-subtitle
                                                     class="headline grey--text"
@@ -180,6 +182,14 @@
 </script>
 
 <style scoped>
+    .car-header {
+        padding: 45px;
+    }
+
+    .car-comments {
+        padding: 45px;
+    }
+
     .comments-header {
         padding-right: 20px;
     }
