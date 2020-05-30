@@ -19,3 +19,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     filter_class = CommentFilterSet
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.order_by('-date_created')
