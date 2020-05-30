@@ -1,43 +1,81 @@
 <template>
     <div>
-        <v-card
-            fluid
-        >
-            {{car.model}}
-            {{car.customer_name}}
-            {{car.customer_phone_number}}
-        </v-card>
-        <v-card
-            fluid
-        >
-            <v-btn
-                v-if="!new_comment"
-                @click="new_comment = true"
+        <v-container>
+            <v-row
+                justify="center"
             >
-                <v-icon>mdi-plus</v-icon>
-                Add Comment
-            </v-btn>
-            <v-textarea
-                v-if="new_comment"
-                v-model="new_comment_data"
-            />
-            <v-btn
-                v-if="new_comment"
-                class="green white--text"
-                @click="save_comment"
-            >
-                <v-icon>mdi-plus</v-icon>
-                Save New Comment
-            </v-btn>
-            <v-list>
-                <v-list-item
-                    v-for="comment in comments"
+                <v-col
+                    cols="9"
                 >
-                    {{comment.date_created}}
-                    {{comment.content}}
-                </v-list-item>
-            </v-list>
-        </v-card>
+                    <v-card
+                        class="car-header"
+                        fluid
+                    >
+                        <v-container>
+                            {{car.model}}
+                            {{car.customer_name}}
+                            {{car.customer_phone_number}}
+                        </v-container>
+                    </v-card>
+                </v-col>
+            </v-row>
+
+            <v-row
+                justify="center"
+            >
+                <v-col
+                    cols="9"
+                >
+                    <v-card
+                        class="car-comments"
+                        fluid
+                        justify="end"
+                    >
+                        <v-container>
+                            <v-row>
+                                <v-col
+                                    class="d-flex justify-end comments-header"
+                                >
+                                    <v-btn
+                                        v-if="!new_comment"
+                                        @click="new_comment = true"
+                                    >
+                                        <v-icon>mdi-plus</v-icon>
+                                        Add Comment
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col>
+                                    <v-textarea
+                                        fluid
+                                        v-if="new_comment"
+                                        v-model="new_comment_data"
+                                    />
+                                    <v-btn
+                                        v-if="new_comment"
+                                        class="green white--text"
+                                        @click="save_comment"
+                                    >
+                                        <v-icon>mdi-plus</v-icon>
+                                        Save New Comment
+                                    </v-btn>
+                                    <v-list>
+                                        <v-list-item
+                                            v-for="comment in comments"
+                                        >
+                                            {{comment.date_created}}
+                                            {{comment.content}}
+                                        </v-list-item>
+                                    </v-list>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-card>
+                </v-col>
+            </v-row>
+
+        </v-container>
     </div>
 </template>
 
@@ -94,5 +132,8 @@
 </script>
 
 <style scoped>
+    .comments-header {
+        padding-right: 20px;
+    }
 
 </style>
