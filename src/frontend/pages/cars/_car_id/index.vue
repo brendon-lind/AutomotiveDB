@@ -12,9 +12,38 @@
                         fluid
                     >
                         <v-container>
-                            {{car.model}}
-                            {{car.customer_name}}
-                            {{car.customer_phone_number}}
+                            <v-row
+                                justify="space-between"
+                            >
+                                <v-col
+                                    cols="3"
+                                >
+                                    <h4
+                                        class="display-3"
+                                    >
+                                        {{car.model}}
+                                    </h4>
+                                    <h4>
+                                        {{car.customer_name}}
+                                    </h4>
+                                    <h4>
+                                        {{car.customer_phone_number}}
+                                    </h4>
+                                    <h4>
+                                        VIN: {{car.vin}}
+                                    </h4>
+                                </v-col>
+                                <v-col
+                                    cols="3"
+                                >
+                                    <v-btn>
+                                        General Files
+                                    </v-btn>
+                                    <v-btn>
+                                        Invoice Files
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
                         </v-container>
                     </v-card>
                 </v-col>
@@ -63,9 +92,19 @@
                                     <v-list>
                                         <v-list-item
                                             v-for="comment in comments"
+                                            class="comment"
                                         >
-                                            {{comment.date_created}}
-                                            {{comment.content}}
+                                            <v-list-item-content
+                                                class="display-1"
+                                            >
+                                                <v-list-item-subtitle
+                                                    class="headline grey--text"
+                                                >
+                                                    {{format_date(comment.date_created)}}
+                                                </v-list-item-subtitle>
+                                                {{comment.content}}
+                                            </v-list-item-content>
+
                                         </v-list-item>
                                     </v-list>
                                 </v-col>
@@ -123,6 +162,9 @@
                     console.log("Failed to create comment.")
                 }
             },
+            format_date(datestring) {
+                return this.$moment(datestring).format("dddd, MMMM Do YYYY, h:mm:ss a")
+            }
         },
         async mounted() {
             this.get_car()
@@ -134,6 +176,10 @@
 <style scoped>
     .comments-header {
         padding-right: 20px;
+    }
+
+    .comment {
+        margin: 45px;
     }
 
 </style>

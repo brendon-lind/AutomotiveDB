@@ -53,7 +53,7 @@ export default {
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         '@nuxtjs/auth',
-        // '@nuxtjs/moment',
+        '@nuxtjs/moment',
     ],
     /*
     ** Axios module configuration
