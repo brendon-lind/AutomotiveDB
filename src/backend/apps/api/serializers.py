@@ -47,7 +47,6 @@ class CarSerializer(serializers.ModelSerializer):
         return f'{obj.make} {obj.model}'
 
 
-
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
