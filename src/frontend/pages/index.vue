@@ -2,7 +2,7 @@
     <div>
         <v-container>
             <v-row justify="center">
-                <v-col cols="3">
+                <v-col cols="4">
                     <v-text-field
                         v-model="search"
                         append-icon="mdi-magnify"
@@ -15,8 +15,8 @@
                         hide-details
                     ></v-text-field>
                 </v-col>
-                <v-col cols="3">
-                    <v-dialog dark v-model="dialog" max-width="600px">
+                <v-col class="d-flex justify-end" cols="5">
+                    <v-dialog dark v-model="customer_dialog" max-width="600px">
                         <template v-slot:activator="{ on }">
                             <v-btn color="primary" v-on="on">Add Customer</v-btn>
                         </template>
@@ -49,28 +49,61 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-dialog dark v-model="dialog" max-width="600px">
+                    <v-dialog dark v-model="vehicle_dialog" max-width="600px">
                         <template v-slot:activator="{ on }">
-                            <v-btn color="primary" v-on="on">Add Vehicle</v-btn>
+                            <v-btn class="ml-5" color="primary" v-on="on">Add Vehicle</v-btn>
                         </template>
                         <v-card>
                             <v-card-title>
-                                <span class="headline">Customer</span>
+                                <span class="headline">Vehicle</span>
                             </v-card-title>
                             <v-card-text>
                                 <v-container>
                                     <v-row>
                                         <v-col cols="12">
-                                            <v-text-field v-model="customer_form.name" label="Customer Name" required></v-text-field>
+                                            <v-select
+                                                item-text="name"
+                                                item-value="id"
+                                                v-model="vehicle_form.customer"
+                                                :items="customers"
+                                                label="Customer"
+                                            ></v-select>
+                                        </v-col>
+                                        <v-col cols="6">
+                                            <v-text-field v-model="vehicle_form.year" label="Year" required></v-text-field>
+                                        </v-col>
+                                        <v-col cols="6">
+                                                <v-text-field v-model="vehicle_form.make" label="Make" required></v-text-field>
+                                        </v-col>
+                                        <v-col cols="6">
+                                            <v-text-field v-model="vehicle_form.model" label="Model"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="6">
+                                            <v-text-field v-model="vehicle_form.engine_size" label="Engine Size"></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
-                                                <v-text-field v-model="customer_form.phone_number" label="Phone Number" required></v-text-field>
+                                            <v-text-field v-model="vehicle_form.vin" label="Vin"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="6">
+                                            <v-autocomplete
+                                                v-model="vehicle_form.engine_layout"
+                                                item-text="display_name"
+                                                item-value="value"
+                                                :items="engine_layout_options"
+                                                label="Engine Layout"
+                                            ></v-autocomplete>
+                                        </v-col>
+                                        <v-col cols="6">
+                                            <v-autocomplete
+                                                v-model="vehicle_form.fuel"
+                                                item-text="display_name"
+                                                item-value="value"
+                                                :items="fuel_options"
+                                                label="Fuel Type"
+                                            ></v-autocomplete>
                                         </v-col>
                                         <v-col cols="12">
-                                            <v-text-field v-model="customer_form.description" label="Description"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-file-input multiple v-model="customer_form.portrait" label="Profile Picture"></v-file-input>
+                                            <v-file-input v-model="vehicle_form.header_photo" label="Header Photo"></v-file-input>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -78,7 +111,7 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="primary" text @click="dialog = false">Close</v-btn>
-                                <v-btn color="primary" text @click="add_new_customer">Save</v-btn>
+                                <v-btn color="primary" text @click="add_new_vehicle">Save</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
@@ -105,6 +138,7 @@
  export default {
      data () {
          return {
+             customers: {},
              customer_headers: {
                  'Content-Type': 'multipart/form-data',
              },
@@ -114,8 +148,21 @@
                  description: null,
                  portrait: null,
              },
+             vehicle_form: {
+                 customer: null,
+                 year: null,
+                 make: null,
+                 model: null,
+                 vin: null,
+                 engine_size: null,
+                 engine_layout: null,
+                 fuel: null,
+                 header_photo: null,
+             },
              dialog: false,
              cars: [],
+             engine_layout_options: [],
+             fuel_options: [],
              search: '',
              headers: [
                  { text: "Vehicle", value:"make_and_model"},
@@ -133,17 +180,39 @@
              this.$axios.post(url, this.customer_form, this.customer_headers)
              this.dialog= false
          },
+         add_new_vehicle (){
+             console.log(this.vehicle_form)
+             let url= '/api/cars/'
+             this.$axios.post(url, this.vehicle_form)
+             this.dialog= false
+             this.get_car()
+         },
          go_to_car_detail_page (car) {
              window.location.href = `/cars/${car.id}`
          },
-         async get_car () {
+         async get_options () {
+             let url ='/api/cars/'
+             let resp = await this.$axios.options(url)
+             console.log(resp.data)
+             this.engine_layout_options = resp.data.actions.POST.engine_layout.choices
+             this.fuel_options = resp.data.actions.POST.fuel.choices
+         },
+         async get_cars () {
              let url = `/api/cars/`
              let resp = await this.$axios.get(url)
              this.cars = resp.data
          },
+         async get_customers () {
+             let url = `/api/customers/`
+             let resp = await this.$axios.get(url)
+             console.log(resp.data)
+             this.customers = resp.data
+         },
      },
      mounted () {
-         this.get_car()
+         this.get_cars()
+         this.get_options()
+         this.get_customers()
      }
  }
 </script>
