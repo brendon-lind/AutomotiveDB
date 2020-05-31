@@ -44,7 +44,7 @@
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="primary" text @click="dialog = false">Close</v-btn>
+                                <v-btn color="primary" text @click="customer_dialog = false">Close</v-btn>
                                 <v-btn color="primary" text @click="add_new_customer">Save</v-btn>
                             </v-card-actions>
                         </v-card>
@@ -110,7 +110,7 @@
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="primary" text @click="dialog = false">Close</v-btn>
+                                <v-btn color="primary" text @click="vehicle_dialog = false">Close</v-btn>
                                 <v-btn color="primary" text @click="add_new_vehicle">Save</v-btn>
                             </v-card-actions>
                         </v-card>
@@ -131,6 +131,13 @@
                 </v-col>
             </v-row>
         </v-container>
+        <v-snackbar
+            color="primary"
+            v-model="snackbar_success"
+            :timeout="2000"
+        >
+            {{snackbar_message}}
+        </v-snackbar>
     </div>
 </template>
 
@@ -160,7 +167,10 @@
                  fuel: null,
                  header_photo: null,
              },
-             dialog: false,
+             snackbar_message: '',
+             snackbar_success: false,
+             vehicle_dialog: false,
+             customer_dialog: false,
              cars: [],
              engine_layout_options: [],
              fuel_options: [],
@@ -175,7 +185,7 @@
          }
      },
      methods: {
-         add_new_customer (){
+         async add_new_customer (){
              console.log(this.customer_form)
              let url = '/api/customers/'
              let form_data = new FormData()
@@ -184,15 +194,27 @@
              _.forOwn(this.customer_form, function(value, key) {
                  form_data.append(key, value)
              })
-             this.$axios.post(url, form_data, this.file_form_headers)
-             this.dialog = false
+             try {
+                 await this.$axios.post(url, form_data, this.file_form_headers)
+                 this.customer_dialog = false
+                 this.snackbar_message = 'Customer Added'
+                 this.snackbar_success = true
+             } catch {
+                 console.log('Failed to create')
+             }
          },
-         add_new_vehicle (){
+         async add_new_vehicle (){
              console.log(this.vehicle_form)
-             let url= '/api/cars/'
-             this.$axios.post(url, this.vehicle_form)
-             this.dialog= false
-             this.get_car()
+             let url = '/api/cars/'
+             try {
+                 await this.$axios.post(url, this.vehicle_form)
+                 this.vehicle_dialog = false
+                 this.snackbar_message = 'Vehicle Added'
+                 this.snackbar_success = true
+                 this.get_cars()
+             } catch {
+                 console.log('Failed to create')
+             }
          },
          go_to_car_detail_page (car) {
              window.location.href = `/cars/${car.id}`
