@@ -198,6 +198,7 @@
                  this.customer_dialog = false
                  this.snackbar_message = 'Customer Added'
                  this.snackbar_success = true
+                 this.get_customers()
              } catch {
                  console.log('Failed to create')
              }

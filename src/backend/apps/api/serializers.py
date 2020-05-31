@@ -37,7 +37,7 @@ class CarSerializer(serializers.ModelSerializer):
     customer_phone_number = serializers.SerializerMethodField(read_only=True)
     make_and_model = serializers.SerializerMethodField(read_only=True)
 
-    files = CarFileSerializer(many=True)
+    files = CarFileSerializer(read_only=True, many=True)
 
     class Meta:
         model = Car
