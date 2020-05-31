@@ -92,7 +92,6 @@
                  { text: "Customer Name", value:"customer_name"},
                  { text: "Phone Number", value:"customer_phone_number"},
              ]
-
          }
      },
      methods: {

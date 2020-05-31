@@ -38,16 +38,68 @@
                                     cols="3"
                                     align="end"
                                 >
-                                    <v-btn
-                                        class="mb-4 grey darken-2"
-                                    >
-                                        General Files
-                                    </v-btn>
-                                    <v-btn
-                                        class="grey darken-2"
-                                    >
-                                        Invoice Files
-                                    </v-btn>
+                                    <v-menu>
+                                        <template v-slot:activator="{ on }">
+                                            <v-btn
+                                                v-on="on"
+                                                class="mb-4 grey darken-2"
+                                            >
+                                                General Files
+                                            </v-btn>
+                                        </template>
+
+                                        <v-list>
+                                            <v-list-item
+                                                @click="new_general = true"
+                                            >
+                                                <v-list-item-title>
+                                                    <v-icon>mdi-plus</v-icon>
+                                                    Add General File
+                                                </v-list-item-title>
+
+
+                                            </v-list-item>
+                                            <v-list-item
+                                                v-for="(item, index) in general_files"
+                                                :key="index"
+                                                link
+                                                :href="item.file"
+                                            >
+                                                <v-list-item-title>{{ item.name }}</v-list-item-title>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-menu>
+                                    <v-menu>
+                                        <template v-slot:activator="{ on }">
+                                            <v-btn
+                                                v-on="on"
+                                                class="mb-4 grey darken-2"
+                                            >
+                                                Invoice Files
+                                            </v-btn>
+                                        </template>
+
+                                        <v-list>
+                                            <v-list-item
+                                                @click="new_invoice = true"
+                                            >
+                                                <v-list-item-title>
+                                                    <v-icon>mdi-plus</v-icon>
+                                                    Add Invoice File
+                                                </v-list-item-title>
+
+
+                                            </v-list-item>
+                                            <v-list-item
+                                                v-for="(item, index) in invoice_files"
+                                                :key="index"
+                                                link
+                                                :href="item.file"
+                                            >
+                                                <v-list-item-title>{{ item.name }}</v-list-item-title>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-menu>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -123,6 +175,50 @@
             </v-row>
 
         </v-container>
+        <v-dialog v-model="new_general" max-width="600px">
+            <v-card>
+                <v-card-title>
+                    <span class="headline">New General File</span>
+                </v-card-title>
+                <v-card-text>
+                    <v-container>
+                        <v-row>
+                            <v-col cols="12" sm="6">
+                                <v-file-input v-model="new_general_file" label="General File"/>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                    <small>*indicates required field</small>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="new_general = false">Close</v-btn>
+                    <v-btn color="blue darken-1" text @click="save_files">Save</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="new_invoice" max-width="600px">
+            <v-card>
+                <v-card-title>
+                    <span class="headline">New Invoice File</span>
+                </v-card-title>
+                <v-card-text>
+                    <v-container>
+                        <v-row>
+                            <v-col cols="12" sm="6">
+                                <v-file-input v-model="new_invoice_file" label="Invoice File"/>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                    <small>*indicates required field</small>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="new_invoice = false">Close</v-btn>
+                    <v-btn color="blue darken-1" text @click="save_files">Save</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -134,6 +230,10 @@
                 comments: [],
                 new_comment_data: '',
                 new_comment: false,
+                new_invoice: null,
+                new_general: null,
+                new_invoice_file: null,
+                new_general_file: null,
             }
         },
         methods: {
@@ -170,9 +270,63 @@
                     console.log("Failed to create comment.")
                 }
             },
+            async save_files() {
+                try {
+                    if (this.new_general_file) {
+                        let form_data = new FormData()
+                        form_data.append('car', this.$route.params.car_id)
+                        form_data.append('type', 'GENERAL')
+                        form_data.append('file', this.new_general_file)
+                        let resp = await this.$axios.post(
+                            `/api/car_files/`,
+                            form_data,
+                            {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        )
+                    }
+                    if (this.new_invoice_file) {
+                        let form_data = new FormData()
+                        form_data.append('car', this.$route.params.car_id)
+                        form_data.append('type', 'INVOICE')
+                        form_data.append('file', this.new_invoice_file)
+                        let resp = await this.$axios.post(
+                            `/api/car_files/`,
+                            form_data,
+                            {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        )
+                    }
+                    this.new_invoice = false
+                    this.new_general = false
+                    this.new_invoice_file = null
+                    this.new_general_file = null
+                    this.get_car()
+                } catch (e) {
+                    console.log(e)
+                    console.log("Failed to upload files.")
+                }
+            },
             format_date(datestring) {
                 return this.$moment(datestring).format("dddd, MMMM Do YYYY, h:mm:ss a")
             }
+        },
+        computed: {
+            general_files() {
+                if (this.car.files) {
+                    return this.car.files.filter(f => f.type == 'GENERAL')
+                } else {
+                    return []
+                }
+            },
+            invoice_files() {
+                if (this.car.files) {
+                    return this.car.files.filter(f => f.type == 'INVOICE')
+                } else {
+                    return []
+                }
+            },
         },
         async mounted() {
             this.get_car()

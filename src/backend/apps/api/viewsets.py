@@ -1,13 +1,23 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from .serializers import CustomerSerializer, CarSerializer, CommentSerializer
-from .models import Customer, Car, Comment
+from .serializers import CustomerSerializer, CarSerializer, CarFileSerializer, CommentSerializer
+from .models import Customer, CarFile, Car, Comment
 from .filtersets import CommentFilterSet
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+
+class CarFileViewSet(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = CarFile.objects.all()
+    serializer_class = CarFileSerializer
 
 
 class CarViewSet(viewsets.ModelViewSet):
