@@ -37,7 +37,7 @@
                                             <v-text-field v-model="customer_form.description" label="Description"></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
-                                            <v-file-input multiple v-model="customer_form.portrait" label="Profile Picture"></v-file-input>
+                                            <v-file-input v-model="customer_portrait" label="Profile Picture"></v-file-input>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -139,9 +139,10 @@
      data () {
          return {
              customers: {},
-             customer_headers: {
+             file_form_headers: {
                  'Content-Type': 'multipart/form-data',
              },
+             customer_portrait: null,
              customer_form: {
                  name: null,
                  phone_number: null,
@@ -176,9 +177,15 @@
      methods: {
          add_new_customer (){
              console.log(this.customer_form)
-             let url= '/api/customers/'
-             this.$axios.post(url, this.customer_form, this.customer_headers)
-             this.dialog= false
+             let url = '/api/customers/'
+             let form_data = new FormData()
+             form_data.append('portrait', this.customer_portrait)
+
+             _.forOwn(this.customer_form, function(value, key) {
+                 form_data.append(key, value)
+             })
+             this.$axios.post(url, form_data, this.file_form_headers)
+             this.dialog = false
          },
          add_new_vehicle (){
              console.log(this.vehicle_form)
