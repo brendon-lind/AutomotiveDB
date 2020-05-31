@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
 
 
 class Customer(models.Model):
@@ -36,17 +35,15 @@ class Car(models.Model):
     engine_layout = models.CharField(choices=ENGINE_LAYOUT_CHOICES, max_length=50, blank=True)
     fuel = models.CharField(choices=FUEL_CHOICES, max_length=50, blank=True)
     header_photo = models.ImageField(null=True)
-    files = ArrayField(
-        models.FileField(),
-        null=True,
-    )
-    invoices = ArrayField(
-        models.FileField(),
-        null=True,
-    )
 
     def __str__(self):
         return self.model
+
+
+class CarFile(models.Model):
+    file = models.FileField(null=False)
+    car = models.ForeignKey(Car, related_name='files', on_delete=models.CASCADE)
+    type = models.CharField(max_length=15)
 
 
 class Comment(models.Model):

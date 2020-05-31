@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Customer, Comment, Car
+from .models import Customer, Comment, Car, CarFile
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -15,10 +15,29 @@ class CustomerSerializer(serializers.ModelSerializer):
         )
 
 
+class CarFileSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = CarFile
+        fields = (
+            'id',
+            'car',
+            'file',
+            'type',
+            'name',
+        )
+
+    def get_name(self, obj):
+        return obj.file.name
+
+
 class CarSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField(read_only=True)
     customer_phone_number = serializers.SerializerMethodField(read_only=True)
     make_and_model = serializers.SerializerMethodField(read_only=True)
+
+    files = CarFileSerializer(many=True)
 
     class Meta:
         model = Car
@@ -37,7 +56,6 @@ class CarSerializer(serializers.ModelSerializer):
             'fuel',
             'header_photo',
             'files',
-            'invoices',
         )
 
     def get_customer_name(self, obj):
