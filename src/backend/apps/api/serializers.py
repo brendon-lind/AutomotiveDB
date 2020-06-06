@@ -15,6 +15,7 @@ class CustomerSerializer(serializers.ModelSerializer):
         )
 
 
+
 class CarFileSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
 
