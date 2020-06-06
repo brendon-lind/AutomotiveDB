@@ -63,67 +63,77 @@
                         <template v-slot:activator="{ on }">
                             <v-btn class="ml-5" color="primary" v-on="on">Add Vehicle</v-btn>
                         </template>
-                        <v-card>
-                            <v-card-title>
-                                <span class="headline">Vehicle</span>
-                            </v-card-title>
-                            <v-card-text>
-                                <v-container>
-                                    <v-row>
-                                        <v-col cols="12">
-                                            <v-select
-                                                item-text="name"
-                                                item-value="id"
-                                                v-model="vehicle_form.customer"
-                                                :items="customers"
-                                                label="Customer"
-                                            ></v-select>
-                                        </v-col>
-                                        <v-col cols="6">
-                                            <v-text-field v-model="vehicle_form.year" label="Year" required></v-text-field>
-                                        </v-col>
-                                        <v-col cols="6">
-                                            <v-text-field v-model="vehicle_form.make" label="Make" required></v-text-field>
-                                        </v-col>
-                                        <v-col cols="6">
-                                            <v-text-field v-model="vehicle_form.model" label="Model"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="6">
-                                            <v-text-field v-model="vehicle_form.engine_size" label="Engine Size"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-text-field v-model="vehicle_form.vin" label="Vin"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="6">
-                                            <v-autocomplete
-                                                v-model="vehicle_form.engine_layout"
-                                                item-text="display_name"
-                                                item-value="value"
-                                                :items="engine_layout_options"
-                                                label="Engine Layout"
-                                            ></v-autocomplete>
-                                        </v-col>
-                                        <v-col cols="6">
-                                            <v-autocomplete
-                                                v-model="vehicle_form.fuel"
-                                                item-text="display_name"
-                                                item-value="value"
-                                                :items="fuel_options"
-                                                label="Fuel Type"
-                                            ></v-autocomplete>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-file-input v-model="vehicle_form.header_photo" label="Header Photo"></v-file-input>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="primary" text @click="vehicle_dialog = false">Close</v-btn>
-                                <v-btn color="primary" text @click="add_new_vehicle">Save</v-btn>
-                            </v-card-actions>
-                        </v-card>
+                        <v-form
+                            v-model="valid_vehicle"
+                            ref="vehicle_form"
+                        >
+                            <v-card>
+                                <v-card-title>
+                                    <span class="headline">Vehicle</span>
+                                </v-card-title>
+                                <v-card-text>
+                                    <v-container>
+                                        <v-row>
+                                            <v-col cols="12">
+                                                <v-select
+                                                    item-text="name"
+                                                    item-value="id"
+                                                    v-model="vehicle_form.customer"
+                                                    :items="customers"
+                                                    label="Customer"
+                                                ></v-select>
+                                            </v-col>
+                                            <v-col cols="6">
+                                                <v-text-field
+                                                    v-model="vehicle_form.year"
+                                                    label="Year"
+                                                    required
+                                                    :rules="[is_integer]"
+                                                ></v-text-field>
+                                            </v-col>
+                                            <v-col cols="6">
+                                                <v-text-field v-model="vehicle_form.make" label="Make" required></v-text-field>
+                                            </v-col>
+                                            <v-col cols="6">
+                                                <v-text-field v-model="vehicle_form.model" label="Model"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="6">
+                                                <v-text-field v-model="vehicle_form.engine_size" label="Engine Size"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12">
+                                                <v-text-field v-model="vehicle_form.vin" label="Vin"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="6">
+                                                <v-autocomplete
+                                                    v-model="vehicle_form.engine_layout"
+                                                    item-text="display_name"
+                                                    item-value="value"
+                                                    :items="engine_layout_options"
+                                                    label="Engine Layout"
+                                                ></v-autocomplete>
+                                            </v-col>
+                                            <v-col cols="6">
+                                                <v-autocomplete
+                                                    v-model="vehicle_form.fuel"
+                                                    item-text="display_name"
+                                                    item-value="value"
+                                                    :items="fuel_options"
+                                                    label="Fuel Type"
+                                                ></v-autocomplete>
+                                            </v-col>
+                                            <v-col cols="12">
+                                                <v-file-input v-model="vehicle_form.header_photo" label="Header Photo"></v-file-input>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" text @click="vehicle_dialog = false">Close</v-btn>
+                                    <v-btn color="primary" text @click="add_new_vehicle">Save</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-form>
                     </v-dialog>
                 </v-col>
             </v-row>
@@ -162,6 +172,7 @@
              },
              customer_portrait: null,
              valid_customer: false,
+             valid_vehicle: false,
              customer_form: {
                  name: '',
                  phone_number: null,
@@ -239,6 +250,10 @@
                  form_data.append(key, value)
              })
              try {
+                 this.$refs.vehicle_form.validate()
+                 if (!this.valid_vehicle) {
+                     throw new Error('Invalid Vehicle Form')
+                 }
                  await this.$axios.post(url, form_data, this.file_form_headers)
                  this.vehicle_dialog = false
                  this.snackbar_message = 'Vehicle Added'

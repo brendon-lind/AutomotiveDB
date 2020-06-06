@@ -1,11 +1,13 @@
 from django.db import models
 
+from api.storages import PublicStorage
+
 
 class Customer(models.Model):
     name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=20, blank=True)
     description = models.TextField(blank=True)
-    portrait = models.ImageField(default='user_silhouette.png', null=True)
+    portrait = models.ImageField(default='user_silhouette.png', null=True, storage=PublicStorage())
 
     def __str__(self):
         return self.name
@@ -34,14 +36,14 @@ class Car(models.Model):
     engine_size = models.CharField(max_length=50, blank=True)
     engine_layout = models.CharField(choices=ENGINE_LAYOUT_CHOICES, max_length=50, blank=True)
     fuel = models.CharField(choices=FUEL_CHOICES, max_length=50, blank=True)
-    header_photo = models.ImageField(null=True)
+    header_photo = models.ImageField(null=True, storage=PublicStorage())
 
     def __str__(self):
         return self.model
 
 
 class CarFile(models.Model):
-    file = models.FileField(null=False)
+    file = models.FileField(null=False, storage=PublicStorage())
     car = models.ForeignKey(Car, related_name='files', on_delete=models.CASCADE)
     type = models.CharField(max_length=15)
 
