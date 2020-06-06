@@ -133,6 +133,7 @@
         </v-container>
         <v-snackbar
             color="primary"
+            top
             v-model="snackbar_success"
             :timeout="2000"
         >
