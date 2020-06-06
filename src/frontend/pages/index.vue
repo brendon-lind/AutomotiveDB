@@ -73,7 +73,7 @@
                                             <v-text-field v-model="vehicle_form.year" label="Year" required></v-text-field>
                                         </v-col>
                                         <v-col cols="6">
-                                                <v-text-field v-model="vehicle_form.make" label="Make" required></v-text-field>
+                                            <v-text-field v-model="vehicle_form.make" label="Make" required></v-text-field>
                                         </v-col>
                                         <v-col cols="6">
                                             <v-text-field v-model="vehicle_form.model" label="Model"></v-text-field>
@@ -200,6 +200,10 @@
                  this.snackbar_message = 'Customer Added'
                  this.snackbar_success = true
                  this.get_customers()
+                 let that = this
+                 _.forOwn(this.customer_form, function(value, key) {
+                     that.customer_form[key] = null
+                 })
              } catch {
                  console.log('Failed to create')
              }
@@ -217,7 +221,12 @@
                  this.snackbar_message = 'Vehicle Added'
                  this.snackbar_success = true
                  this.get_cars()
-             } catch {
+                 let that = this
+                 _.forOwn(this.vehicle_form, function(value, key) {
+                     that.vehicle_form[key] = null
+                 })
+             } catch(e) {
+                 console.error(e)
                  console.log('Failed to create')
              }
          },
