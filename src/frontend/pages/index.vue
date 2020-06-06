@@ -20,34 +20,44 @@
                         <template v-slot:activator="{ on }">
                             <v-btn color="primary" v-on="on">Add Customer</v-btn>
                         </template>
-                        <v-card>
-                            <v-card-title>
-                                <span class="headline">Customer</span>
-                            </v-card-title>
-                            <v-card-text>
-                                <v-container>
-                                    <v-row>
-                                        <v-col cols="12">
-                                            <v-text-field v-model="customer_form.name" label="Customer Name" required></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12">
-                                                <v-text-field v-model="customer_form.phone_number" label="Phone Number" required></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-text-field v-model="customer_form.description" label="Description"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-file-input v-model="customer_portrait" label="Profile Picture"></v-file-input>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="primary" text @click="customer_dialog = false">Close</v-btn>
-                                <v-btn color="primary" text @click="add_new_customer">Save</v-btn>
-                            </v-card-actions>
-                        </v-card>
+                        <v-form
+                            v-model="valid_customer"
+                            ref="customer_form"
+                        >
+                            <v-card>
+                                <v-card-title>
+                                    <span class="headline">Customer</span>
+                                </v-card-title>
+                                <v-card-text>
+                                        <v-container>
+                                            <v-row>
+                                                <v-col cols="12">
+                                                    <v-text-field
+                                                        v-model="customer_form.name"
+                                                        label="Customer Name"
+                                                        required
+                                                        :rules="[required_field]"
+                                                    ></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12">
+                                                    <v-text-field v-model="customer_form.phone_number" label="Phone Number" required></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12">
+                                                    <v-text-field v-model="customer_form.description" label="Description"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12">
+                                                    <v-file-input v-model="customer_portrait" label="Profile Picture"></v-file-input>
+                                                </v-col>
+                                            </v-row>
+                                        </v-container>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" text @click="customer_dialog = false">Close</v-btn>
+                                    <v-btn color="primary" text @click="add_new_customer">Save</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-form>
                     </v-dialog>
                     <v-dialog dark v-model="vehicle_dialog" max-width="600px">
                         <template v-slot:activator="{ on }">
@@ -73,7 +83,7 @@
                                             <v-text-field v-model="vehicle_form.year" label="Year" required></v-text-field>
                                         </v-col>
                                         <v-col cols="6">
-                                                <v-text-field v-model="vehicle_form.make" label="Make" required></v-text-field>
+                                            <v-text-field v-model="vehicle_form.make" label="Make" required></v-text-field>
                                         </v-col>
                                         <v-col cols="6">
                                             <v-text-field v-model="vehicle_form.model" label="Model"></v-text-field>
@@ -151,8 +161,9 @@
                  'Content-Type': 'multipart/form-data',
              },
              customer_portrait: null,
+             valid_customer: false,
              customer_form: {
-                 name: null,
+                 name: '',
                  phone_number: null,
                  description: null,
                  portrait: null,
@@ -185,6 +196,14 @@
          }
      },
      methods: {
+         required_field(value) {
+             let message = 'This field is required.'
+             if (!value) {
+                 return message
+             } else {
+                 return true
+             }
+         },
          async add_new_customer (){
              console.log(this.customer_form)
              let url = '/api/customers/'
@@ -195,11 +214,19 @@
                  form_data.append(key, value)
              })
              try {
+                 this.$refs.customer_form.validate()
+                 if (!this.valid_customer) {
+                     throw new Error('Invalid Customer Form')
+                 }
                  await this.$axios.post(url, form_data, this.file_form_headers)
                  this.customer_dialog = false
                  this.snackbar_message = 'Customer Added'
                  this.snackbar_success = true
                  this.get_customers()
+                 let that = this
+                 _.forOwn(this.customer_form, function(value, key) {
+                     that.customer_form[key] = null
+                 })
              } catch {
                  console.log('Failed to create')
              }
@@ -217,7 +244,12 @@
                  this.snackbar_message = 'Vehicle Added'
                  this.snackbar_success = true
                  this.get_cars()
-             } catch {
+                 let that = this
+                 _.forOwn(this.vehicle_form, function(value, key) {
+                     that.vehicle_form[key] = null
+                 })
+             } catch(e) {
+                 console.error(e)
                  console.log('Failed to create')
              }
          },
