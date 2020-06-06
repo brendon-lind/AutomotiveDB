@@ -126,7 +126,7 @@
                                 >
                                     <v-btn
                                         v-if="!new_comment"
-                                        @click="new_comment = true"
+                                        @click="create_new_comment"
                                         color="primary"
                                     >
                                         <v-icon>mdi-plus</v-icon>
@@ -149,22 +149,75 @@
                                         <v-icon>mdi-plus</v-icon>
                                         Save New Comment
                                     </v-btn>
+                                    <v-btn
+                                        v-if="new_comment"
+                                        color="primary"
+                                        @click="new_comment=false"
+                                    >
+                                        Cancel
+                                    </v-btn>
                                     <v-list>
                                         <v-list-item
                                             v-for="comment in comments"
                                             class="comment"
                                         >
-                                            <v-list-item-content
-                                                class="headline"
-                                            >
-                                                <v-list-item-subtitle
-                                                    class="headline grey--text"
+                                            <v-container>
+                                                <v-row
+                                                    fluid
                                                 >
-                                                    {{format_date(comment.date_created)}}
-                                                </v-list-item-subtitle>
-                                                {{comment.content}}
-                                            </v-list-item-content>
-
+                                                    <v-list-item-content
+                                                        class="headline"
+                                                    >
+                                                        <v-list-item-subtitle
+                                                            class="headline grey--text"
+                                                        >
+                                                            {{format_date(comment.date_created)}}
+                                                        </v-list-item-subtitle>
+                                                        {{comment.content}}
+                                                    </v-list-item-content>
+                                                    <v-btn
+                                                        @click="edit_comment(comment)"
+                                                    >
+                                                        Edit
+                                                        <v-icon>
+                                                            mdi-pencil
+                                                        </v-icon>
+                                                    </v-btn>
+                                                    <v-btn
+                                                        @click="delete_comment(comment)"
+                                                    >
+                                                        Delete
+                                                        <v-icon>
+                                                            mdi-delete
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </v-row>
+                                                <v-row
+                                                    fluid
+                                                >
+                                                    <v-col>
+                                                        <v-textarea
+                                                                fluid
+                                                            v-if="edit_comment_id===comment.id"
+                                                            v-model="edit_comment_data"
+                                                        />
+                                                        <v-btn
+                                                            v-if="edit_comment_id===comment.id"
+                                                            color="primary"
+                                                            @click="save_comment"
+                                                        >
+                                                            Save Comment
+                                                        </v-btn>
+                                                        <v-btn
+                                                            v-if="edit_comment_id===comment.id"
+                                                            color="primary"
+                                                            @click="edit_comment_id=null"
+                                                        >
+                                                            Cancel
+                                                        </v-btn>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-container>
                                         </v-list-item>
                                     </v-list>
                                 </v-col>
@@ -230,6 +283,8 @@
                 comments: [],
                 new_comment_data: '',
                 new_comment: false,
+                edit_comment_id: null,
+                edit_comment_data: '',
                 new_invoice: null,
                 new_general: null,
                 new_invoice_file: null,
@@ -255,15 +310,44 @@
                     console.log("Failed to get comments.")
                 }
             },
+            create_new_comment() {
+                this.new_comment_data = ''
+                this.new_comment = true
+            },
+            async edit_comment(comment) {
+                this.edit_comment_id = comment.id
+                this.edit_comment_data = comment.content
+            },
+            async delete_comment(comment) {
+                if(confirm("Are you sure you want to delete this comment?")) {
+                    try {
+                        let resp = await this.$axios.delete(`/api/comments/${comment.id}/`)
+                        this.get_comments()
+                    } catch (e) {
+                        console.log(e)
+                        console.log("Failed to delete comment.")
+                    }
+                }
+            },
             async save_comment() {
                 try {
-                    if (this.new_comment_data.length > 0) {
-                        let resp = await this.$axios.post(`/api/comments/`, {
-                            car: this.$route.params.car_id,
-                            content: this.new_comment_data
-                        })
-                        this.new_comment = false
+                    if (this.edit_comment_id) {
+                        let resp = await this.$axios.patch(`/api/comments/${this.edit_comment_id}/`, {
+                                content: this.edit_comment_data
+                            }
+                        )
+                        this.edit_comment_id = null
                         this.get_comments()
+                    }
+                    else if (this.new_comment) {
+                        if (this.new_comment_data.length > 0) {
+                            let resp = await this.$axios.post(`/api/comments/`, {
+                                car: this.$route.params.car_id,
+                                content: this.new_comment_data
+                            })
+                            this.new_comment = false
+                            this.get_comments()
+                        }
                     }
                 } catch (e) {
                     console.log(e)
