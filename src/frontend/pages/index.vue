@@ -207,8 +207,12 @@
          async add_new_vehicle (){
              console.log(this.vehicle_form)
              let url = '/api/cars/'
+             let form_data = new FormData()
+             _.forOwn(this.vehicle_form, function(value, key) {
+                 form_data.append(key, value)
+             })
              try {
-                 await this.$axios.post(url, this.vehicle_form)
+                 await this.$axios.post(url, form_data, this.file_form_headers)
                  this.vehicle_dialog = false
                  this.snackbar_message = 'Vehicle Added'
                  this.snackbar_success = true
