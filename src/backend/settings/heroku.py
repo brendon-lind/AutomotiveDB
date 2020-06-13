@@ -43,7 +43,7 @@ STATICFILES_DIRS = (
 # class PublicStorage(S3Boto3Storage):
 #     default_acl = "public-read"
 #     gzip = True
-STATICFILES_STORAGE = 'automotivedb.storages.PublicStorage'
+STATICFILES_STORAGE = 'api.storages.PublicStorage'
 
 
 # =============================================================================
