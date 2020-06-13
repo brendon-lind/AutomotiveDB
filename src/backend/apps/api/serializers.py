@@ -36,6 +36,8 @@ class CarSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField(read_only=True)
     customer_phone_number = serializers.SerializerMethodField(read_only=True)
     make_and_model = serializers.SerializerMethodField(read_only=True)
+    customer_description = serializers.SerializerMethodField(read_only=True)
+    customer_portrait = serializers.SerializerMethodField(read_only=True)
 
     files = CarFileSerializer(read_only=True, many=True)
 
@@ -46,6 +48,8 @@ class CarSerializer(serializers.ModelSerializer):
             'customer',
             'customer_name',
             'customer_phone_number',
+            'customer_description',
+            'customer_portrait',
             'make_and_model',
             'year',
             'make',
@@ -60,6 +64,14 @@ class CarSerializer(serializers.ModelSerializer):
 
     def get_customer_name(self, obj):
         return obj.customer.name
+
+    def get_customer_description(self, obj):
+        return obj.customer.description
+
+    def get_customer_portrait(self, obj):
+        request = self.context.get('request')
+        photo_url = obj.customer.portrait.url
+        return request.build_absolute_uri(photo_url)
 
     def get_customer_phone_number(self, obj):
         return obj.customer.phone_number

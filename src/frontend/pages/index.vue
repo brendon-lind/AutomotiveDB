@@ -142,11 +142,11 @@
                     <v-data-table
                         @click:row="go_to_car_detail_page"
                         :headers="headers"
-                    :items="cars"
-                    :items-per-page="12"
-                    dark
-                    class="elevation-1"
-                    :search="search"
+                        :items="cars"
+                        :items-per-page="12"
+                        dark
+                        class="elevation-1"
+                        :search="search"
                 ></v-data-table>
                 </v-col>
             </v-row>
@@ -274,7 +274,6 @@
          async get_options () {
              let url ='/api/cars/'
              let resp = await this.$axios.options(url)
-             console.log(resp.data)
              this.engine_layout_options = resp.data.actions.POST.engine_layout.choices
              this.fuel_options = resp.data.actions.POST.fuel.choices
          },

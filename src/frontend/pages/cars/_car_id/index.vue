@@ -19,11 +19,13 @@
                                 <v-col
                                     cols="3"
                                 >
-                                    <h4
-                                        class="display-3"
-                                    >
-                                        {{car.model}}
-                                    </h4>
+                                    <v-img
+                                        :src="car.customer_portrait"
+                                        width="150px"
+                                        height="150px"
+                                        contain
+                                    ></v-img>
+                                    <v-spacer></v-spacer>
                                     <h4>
                                         {{car.customer_name}}
                                     </h4>
@@ -31,13 +33,110 @@
                                         {{car.customer_phone_number}}
                                     </h4>
                                     <h4>
+                                        {{car.customer_description}}
+                                    </h4>
+                                </v-col>
+                                <v-col>
+                                    <h4>
+                                        {{car.make_and_model}}
+                                    </h4>
+                                    <h4>
+                                        Year: {{car.year}}
+                                    </h4>
+                                    <h4>
                                         VIN: {{car.vin}}
                                     </h4>
+                                    <h4>
+                                        {{car.engine_size}} Liter
+                                        {{car.engine_layout}}
+                                    </h4>
+                                    <h4>
+                                        Fuel Type: {{car.fuel}}
+                                    </h4>
+                                    <v-dialog dark v-model="edit_vehicle_dialog" max-width="600px">
+                                        <template v-slot:activator="{ on }">
+                                            <v-btn class="ml-5" color="primary" v-on="on">Edit Vehicle</v-btn>
+                                        </template>
+                                        <v-card>
+                                            <v-card-title>
+                                                <span class="headline">Vehicle</span>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-container>
+                                                    <v-row>
+                                                        <v-col cols="12">
+                                                            <v-select
+                                                                item-text="name"
+                                                                item-value="id"
+                                                                v-model="edit_vehicle_form.customer_name"
+                                                                :items="customers"
+                                                                label="Customer"
+                                                            ></v-select>
+                                                        </v-col>
+                                                        <v-col cols="6">
+                                                            <v-text-field v-model="edit_vehicle_form.year" label="Year" required></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="6">
+                                                            <v-text-field v-model="edit_vehicle_form.make" label="Make" required></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="6">
+                                                            <v-text-field v-model="edit_vehicle_form.model" label="Model"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="6">
+                                                            <v-text-field v-model="edit_vehicle_form.engine_size" label="Engine Size"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12">
+                                                            <v-text-field v-model="edit_vehicle_form.vin" label="Vin"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="6">
+                                                            <v-autocomplete
+                                                                v-model="edit_vehicle_form.engine_layout"
+                                                                item-text="display_name"
+                                                                item-value="value"
+                                                                :items="engine_layout_options"
+                                                                label="Engine Layout"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <v-col cols="6">
+                                                            <v-autocomplete
+                                                                v-model="edit_vehicle_form.fuel"
+                                                                item-text="display_name"
+                                                                item-value="value"
+                                                                :items="fuel_options"
+                                                                label="Fuel Type"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <v-col cols="12">
+                                                            <v-file-input v-model="edit_vehicle_form.header_photo" label="Header Photo"></v-file-input>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-container>
+                                            </v-card-text>
+                                            <v-card-actions>
+                                                <v-spacer></v-spacer>
+                                                <v-btn color="primary" text @click="edit_vehicle_dialog = false">Close</v-btn>
+                                                <v-btn color="primary" text @click="edit_vehicle">Save</v-btn>
+                                            </v-card-actions>
+                                        </v-card>
+                                    </v-dialog>
+                                </v-col>
+                                <v-col>
+                                    <v-img
+                                        :src="car.header_photo"
+                                        width="400px"
+                                        height="200px"
+                                        contain
+                                    ></v-img>
                                 </v-col>
                                 <v-col
                                     cols="3"
                                     align="end"
                                 >
+                                    <v-btn
+                                        @click="test"
+                                    >
+                                        Test
+                                    </v-btn>
                                     <v-menu>
                                         <template v-slot:activator="{ on }">
                                             <v-btn
@@ -289,9 +388,38 @@
                 new_general: null,
                 new_invoice_file: null,
                 new_general_file: null,
+                edit_vehicle_dialog: false,
+                edit_vehicle_form: {
+                    customer_name: null,
+                    year: null,
+                    make: null,
+                    model: null,
+                    vin: null,
+                    engine_size: null,
+                    engine_layout: null,
+                    fuel: null,
+                    header_photo: null,
+                },
+                engine_layout_options: [],
+                fuel_options: [],
+                customers: [],
             }
         },
         methods: {
+            test() {
+                console.log(this.car)
+                _.forOwn(this.edit_vehicle_form, (value, key) => {
+                    this.edit_vehicle_form[key] = this.car[key]
+                })
+                console.log(this.edit_vehicle_form)
+            },
+            edit_vehicle() {
+                this.edit_vehicle_dialog = true
+                _.forOwn(this.edit_vehicle_form, (value, key) => {
+                    this.edit_vehicle_form[key] = this.car[key]
+                    console.log(key)
+                })
+            },
             async get_car() {
                 try {
                     let resp = await this.$axios.get(`/api/cars/${this.$route.params.car_id}`)
@@ -394,7 +522,18 @@
             },
             format_date(datestring) {
                 return this.$moment(datestring).format("dddd, MMMM Do YYYY, h:mm:ss a")
-            }
+            },
+            async get_customers () {
+                let url = `/api/customers/`
+                let resp = await this.$axios.get(url)
+                this.customers = resp.data
+            },
+            async get_options () {
+                let url ='/api/cars/'
+                let resp = await this.$axios.options(url)
+                this.engine_layout_options = resp.data.actions.POST.engine_layout.choices
+                this.fuel_options = resp.data.actions.POST.fuel.choices
+            },
         },
         computed: {
             general_files() {
@@ -413,6 +552,7 @@
             },
         },
         async mounted() {
+            this.get_customers()
             this.get_car()
             this.get_comments()
         }
