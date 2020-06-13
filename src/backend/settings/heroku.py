@@ -38,12 +38,12 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, '../frontend/build/generated'),
     os.path.join(BASE_DIR, 'static'),
 )
-# STATICFILES_STORAGE = 'whitenoise.django.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 # Turn this on to use S3 public static storage
 # class PublicStorage(S3Boto3Storage):
 #     default_acl = "public-read"
 #     gzip = True
-STATICFILES_STORAGE = 'api.storages.PublicStorage'
+# STATICFILES_STORAGE = 'api.storages.PublicStorage'
 
 
 # =============================================================================
