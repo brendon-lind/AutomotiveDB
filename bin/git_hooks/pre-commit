@@ -4,7 +4,7 @@ color_off="\033[m"
 command=`cd src/backend && flake8 --exclude=uploads/*`
 if [ ! -z "${command}" ]
 then
-    echo "${red} ***  There were style issues with your push, please fix before pushing!  *** ${color_off}"
+    echo "${red} ***  There were style issues with your commit, please fix before commit!  *** ${color_off}"
     echo "${command}"
     exit 1
 fi

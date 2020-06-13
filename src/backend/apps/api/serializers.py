@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Customer, Comment, Car
+from .models import Customer, Comment, Car, CarFile
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -15,10 +15,31 @@ class CustomerSerializer(serializers.ModelSerializer):
         )
 
 
+class CarFileSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = CarFile
+        fields = (
+            'id',
+            'car',
+            'file',
+            'type',
+            'name',
+        )
+
+    def get_name(self, obj):
+        return obj.file.name
+
+
 class CarSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField(read_only=True)
     customer_phone_number = serializers.SerializerMethodField(read_only=True)
     make_and_model = serializers.SerializerMethodField(read_only=True)
+    customer_description = serializers.SerializerMethodField(read_only=True)
+    customer_portrait = serializers.SerializerMethodField(read_only=True)
+
+    files = CarFileSerializer(read_only=True, many=True)
 
     class Meta:
         model = Car
@@ -27,18 +48,30 @@ class CarSerializer(serializers.ModelSerializer):
             'customer',
             'customer_name',
             'customer_phone_number',
+            'customer_description',
+            'customer_portrait',
             'make_and_model',
             'year',
             'make',
             'model',
             'vin',
+            'engine_size',
+            'engine_layout',
+            'fuel',
             'header_photo',
             'files',
-            'invoices',
         )
 
     def get_customer_name(self, obj):
         return obj.customer.name
+
+    def get_customer_description(self, obj):
+        return obj.customer.description
+
+    def get_customer_portrait(self, obj):
+        request = self.context.get('request')
+        photo_url = obj.customer.portrait.url
+        return request.build_absolute_uri(photo_url)
 
     def get_customer_phone_number(self, obj):
         return obj.customer.phone_number

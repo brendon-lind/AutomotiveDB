@@ -145,8 +145,11 @@ REST_FRAMEWORK = {
 
 # =============================================================================
 # OAuth
-# =============================================================================
-CORS_ORIGIN_ALLOW_ALL = True
+if os.environ.get("CORS_ORIGIN_ALLOW_ALL") == "False":
+    CORS_ORIGIN_ALLOW_ALL = False
+else:
+    CORS_ORIGIN_ALLOW_ALL = True
+
 
 if not DEBUG:
     assert not CORS_ORIGIN_ALLOW_ALL, "Disable CORS_ORIGIN_ALLOW_ALL if we're not in DEBUG mode"
