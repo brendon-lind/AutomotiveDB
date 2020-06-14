@@ -53,10 +53,8 @@
                                     <h4>
                                         Fuel Type: {{car.fuel}}
                                     </h4>
+                                    <v-btn class="ml-5" color="primary" @click="edit_vehicle">Edit Vehicle</v-btn>
                                     <v-dialog dark v-model="edit_vehicle_dialog" max-width="600px">
-                                        <template v-slot:activator="{ on }">
-                                            <v-btn class="ml-5" color="primary" v-on="on">Edit Vehicle</v-btn>
-                                        </template>
                                         <v-card>
                                             <v-card-title>
                                                 <span class="headline">Vehicle</span>
@@ -68,7 +66,7 @@
                                                             <v-select
                                                                 item-text="name"
                                                                 item-value="id"
-                                                                v-model="edit_vehicle_form.customer_name"
+                                                                v-model="edit_vehicle_form.customer"
                                                                 :items="customers"
                                                                 label="Customer"
                                                             ></v-select>
@@ -115,7 +113,7 @@
                                             <v-card-actions>
                                                 <v-spacer></v-spacer>
                                                 <v-btn color="primary" text @click="edit_vehicle_dialog = false">Close</v-btn>
-                                                <v-btn color="primary" text @click="edit_vehicle">Save</v-btn>
+                                                <v-btn color="primary" text @click.stop="save_vehicle">Save</v-btn>
                                             </v-card-actions>
                                         </v-card>
                                     </v-dialog>
@@ -378,6 +376,9 @@
     export default {
         data() {
             return {
+                file_form_headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
                 car: {},
                 comments: [],
                 new_comment_data: '',
@@ -390,7 +391,7 @@
                 new_general_file: null,
                 edit_vehicle_dialog: false,
                 edit_vehicle_form: {
-                    customer_name: null,
+                    customer: null,
                     year: null,
                     make: null,
                     model: null,
@@ -407,6 +408,7 @@
         },
         methods: {
             test() {
+
                 console.log(this.car)
                 _.forOwn(this.edit_vehicle_form, (value, key) => {
                     this.edit_vehicle_form[key] = this.car[key]
@@ -414,11 +416,14 @@
                 console.log(this.edit_vehicle_form)
             },
             edit_vehicle() {
-                this.edit_vehicle_dialog = true
                 _.forOwn(this.edit_vehicle_form, (value, key) => {
+                    if (key === 'header_photo') {
+                        return
+                    }
                     this.edit_vehicle_form[key] = this.car[key]
                     console.log(key)
                 })
+                this.edit_vehicle_dialog = true
             },
             async get_car() {
                 try {
@@ -518,6 +523,31 @@
                 } catch (e) {
                     console.log(e)
                     console.log("Failed to upload files.")
+                }
+            },
+            async save_vehicle() {
+                let url = `/api/cars/${this.$route.params.car_id}/`
+                let form_data = new FormData()
+                let that = this
+                console.log('save_vehicle')
+
+                _.forOwn(this.edit_vehicle_form, function(value, key) {
+                    if (key === 'header_photo') {
+                        if (!that.edit_vehicle_form.header_photo) {
+                            return
+                        }
+                    }
+                    form_data.append(key, value)
+                })
+                try {
+                    await this.$axios.patch(url, form_data, this.file_form_headers)
+                    this.vehicle_dialog = false
+                    this.snackbar_message = 'Vehicle Edited'
+                    this.snackbar_success = true
+                    this.get_car()
+                } catch(e) {
+                    console.error(e)
+                    console.log('Failed to create')
                 }
             },
             format_date(datestring) {
